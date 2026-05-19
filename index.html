@@ -143,7 +143,7 @@
     
     #receiptContainer { position: fixed; top: -9999px; left: -9999px; visibility: hidden; }
     
-    /* ========== FIXED PROFESSIONAL RECEIPT STYLES ========== */
+    /* Professional Receipt Styles */
     .receipt-wrapper {
       width: 100%;
       max-width: 800px;
@@ -546,7 +546,7 @@ const auth = firebase.auth();
     });
   }
 
-  // FIXED PROFESSIONAL RECEIPT FUNCTION
+  // Professional Receipt Function
   function generateReceiptPDF(tenant, payment) {
     const today = new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
     const receiptNumber = `HOG-${payment.id.slice(-8).toUpperCase()}`;
@@ -603,7 +603,7 @@ const auth = firebase.auth();
               <tr><td>Monthly Rent - ${payment.monthYear}</td><td>${formatZAR(payment.amount)}</td></tr>
               <tr class="total-row"><td><strong>TOTAL PAID</strong></td><td><strong>${formatZAR(payment.amount)}</strong></td></tr>
             </tbody>
-          </table>
+           </table>
           
           <div class="amount-summary">
             <div class="summary-row"><span>Base Rent</span><span>${formatZAR(payment.amount)}</span></div>
@@ -791,7 +791,7 @@ const auth = firebase.auth();
     updateStats();
   }
 
-  // Forgot Password Function
+  // Forgot Password Function - WORKING
   async function handleForgotPassword() {
     const email = document.getElementById('resetEmail')?.value.trim();
     if (!email) {
@@ -803,10 +803,16 @@ const auth = firebase.auth();
       await auth.sendPasswordResetEmail(email);
       showProcessing(false);
       showToast("Password reset email sent! Check your inbox.", true);
-      renderAuth();
+      setTimeout(() => renderAuth(), 2000);
     } catch(err) {
       showProcessing(false);
-      showToast(err.message, false);
+      let errorMsg = err.message;
+      if (errorMsg.includes('user-not-found')) {
+        errorMsg = "No account found with this email address";
+      } else if (errorMsg.includes('invalid-email')) {
+        errorMsg = "Please enter a valid email address";
+      }
+      showToast(errorMsg, false);
     }
   }
 
