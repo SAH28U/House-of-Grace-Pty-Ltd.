@@ -124,6 +124,128 @@
       border-color: #2563EB;
       box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
+
+    /* ============================================
+       OPTIMIZED TENANT SEARCH
+       ============================================ */
+    .tenant-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .tenant-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 420px;
+      max-width: 620px;
+    }
+    .tenant-search-box {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+    .tenant-search-box > i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748B;
+      pointer-events: none;
+      z-index: 2;
+    }
+    #tenantSearch {
+      width: 100%;
+      height: 44px;
+      box-sizing: border-box;
+      padding: 0 42px 0 42px;
+      border: 2px solid #E2E8F0;
+      border-radius: 40px;
+      background: #FFFFFF;
+      color: #1F2937;
+      font: 500 0.85rem 'Inter', sans-serif;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    #tenantSearch:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+    }
+    #tenantSearch::placeholder { color: #94A3B8; }
+    .tenant-search-clear {
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border: 0;
+      border-radius: 50%;
+      background: #F1F5F9;
+      color: #64748B;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .tenant-search-clear.visible { display: flex; }
+    .tenant-search-clear:hover { background: #E2E8F0; color: #1E3A8A; }
+    .tenant-search-btn {
+      height: 44px;
+      border: 0;
+      border-radius: 40px;
+      padding: 0 18px;
+      background: #2563EB;
+      color: #FFFFFF;
+      font: 700 .82rem 'Inter', sans-serif;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform .15s, box-shadow .2s, background .2s;
+      white-space: nowrap;
+    }
+    .tenant-search-btn:hover { background: #1D4ED8; box-shadow: 0 5px 14px rgba(37,99,235,.22); }
+    .tenant-search-btn:active { transform: translateY(1px); }
+    .search-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 10px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: #F8FAFC;
+      color: #64748B;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .search-summary strong { color: #1E3A8A; }
+    .search-empty {
+      text-align: center;
+      padding: 52px 20px;
+      color: #64748B;
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 24px;
+    }
+    .search-empty i { font-size: 2.4rem; color: #CBD5E1; margin-bottom: 12px; }
+    .search-empty h4 { margin: 0 0 6px; color: #334155; }
+    .search-empty p { margin: 0; font-size: .82rem; }
+    .search-highlight { background: #DBEAFE; color: #1E3A8A; border-radius: 4px; padding: 1px 3px; font-weight: 700; }
+    @media (max-width: 850px) {
+      .tenant-toolbar { justify-content: stretch; }
+      .tenant-search-wrap { max-width: none; flex-basis: 100%; }
+    }
+    @media (max-width: 640px) {
+      .tenant-search-wrap { flex-direction: column; align-items: stretch; }
+      .tenant-search-box, .tenant-search-btn, .sort-select, #addTenantBtn { width: 100%; max-width: none; }
+      .tenant-search-btn { justify-content: center; }
+    }
+
     .tenant-grid { display: flex; flex-direction: column; gap: 12px; max-height: 65vh; overflow-y: auto; }
     .tenant-card { background: #F9FAFB; border-radius: 24px; padding: 16px 18px; border: 1px solid #E5E7EB; cursor: pointer; transition: all 0.2s; }
     .tenant-card:hover { border-color: #2563EB; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
@@ -532,12 +654,27 @@
     <div class="tenants-section">
       <div class="section-header">
   <h3><i class="fas fa-building"></i> Registered Tenants</h3>
-  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-    <select id="locationSort" class="sort-select" title="Sort tenants by property location">
+  <div class="tenant-toolbar">
+    <div class="tenant-search-wrap">
+      <div class="tenant-search-box">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input id="tenantSearch" type="search" inputmode="search" autocomplete="off" spellcheck="false"
+          placeholder="Search name, ID, phone, property or room..." aria-label="Search tenants">
+        <button id="clearTenantSearch" type="button" class="tenant-search-clear" aria-label="Clear search" title="Clear search">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <button id="tenantSearchBtn" type="button" class="tenant-search-btn" title="Search tenants">
+        <i class="fas fa-search"></i><span>Search</span>
+      </button>
+    </div>
+
+    <select id="locationSort" class="sort-select" title="Filter tenants by property location">
       <option value="all">All Locations</option>
       <option value="20-swanson">Location: 20 Swanson Street</option>
       <option value="99a-station">Location: 99A Station Road</option>
     </select>
+
     <button id="addTenantBtn" class="btn-primary"><i class="fas fa-plus-circle"></i> New Tenant</button>
   </div>
 </div>
@@ -723,7 +860,7 @@ async function handleEmailVerification(oobCode) {
   document.getElementById('confirmNoBtn').onclick = () => closeConfirm(false);
 
   function formatZAR(amt) { return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amt); }
-  function escapeHtml(s) { if(!s) return ''; return s.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+  function escapeHtml(s) { const value = String(s ?? ''); return value.replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m])); }
   
   function showToast(msg, isSuccess=true) { 
     let pop = document.getElementById('redirectPopup'); 
@@ -754,6 +891,7 @@ async function handleEmailVerification(oobCode) {
       const tenants = Object.keys(tenantsObj).map(key => ({ id: key, ...tenantsObj[key] }));
       if (currentUser) {
         currentUser.tenantData = tenants;
+        currentUser.tenantSearchIndex = buildTenantSearchIndex(tenants);
         renderTenantList();
         if (selectedTenantId && !tenants.find(t => t.id === selectedTenantId)) selectedTenantId = tenants[0]?.id || null;
         renderRightPanel(selectedTenantId);
@@ -852,7 +990,7 @@ async function handleEmailVerification(oobCode) {
               </div>
               <div class="logo-text">
                 <h2>HOUSE OF GRACE</h2>
-                <p>PTY LTD • Reg: 2024/123456/07</p>
+                <p>PTY LTD • Reg: 2026/01/01</p>
                 <p>South Africa</p>
               </div>
             </div>
@@ -1092,68 +1230,161 @@ async function handleEmailVerification(oobCode) {
     document.querySelectorAll('.del-payment-btn').forEach(btn => btn.addEventListener('click', () => deletePayment(tenant.id, btn.dataset.pid)));
   }
 
-  function renderTenantList() {
-    let tenants = [...(currentUser?.tenantData || [])];
-    let container = document.getElementById('tenantListContainer');
-    let sortControl = document.getElementById('locationSort');
+  // ============================================
+  // OPTIMIZED TENANT SEARCH + FILTERING
+  // Search is local because tenantData is already loaded
+  // for the authenticated user. No Firebase read is made
+  // while the user types.
+  // ============================================
+  function normalizeSearch(value) {
+    return String(value ?? '')
+      .toLocaleLowerCase('en-ZA')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
 
-    if (!tenants.length) {
-      container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-user-friends fa-3x"></i><p>No tenants</p></div>';
+  function buildTenantSearchIndex(tenants) {
+    return (tenants || []).map(t => ({
+      ...t,
+      _searchText: normalizeSearch([
+        t.fullName,
+        t.idNumber,
+        t.email,
+        t.phone,
+        t.propertyLocation,
+        t.roomNumber
+      ].join(' '))
+    }));
+  }
+
+  function getSearchQuery() {
+    return normalizeSearch(document.getElementById('tenantSearch')?.value || '');
+  }
+
+  function tenantMatchesQuery(tenant, query) {
+    if (!query) return true;
+    const tokens = query.split(/\s+/).filter(Boolean);
+    return tokens.every(token => tenant._searchText.includes(token));
+  }
+
+  function renderSearchSummary(total, shown, query, locationValue) {
+    const existing = document.getElementById('searchSummary');
+    if (existing) existing.remove();
+    if (!query && locationValue === 'all') return;
+
+    const summary = document.createElement('div');
+    summary.id = 'searchSummary';
+    summary.className = 'search-summary';
+    const locationLabel = locationValue !== 'all'
+      ? document.getElementById('locationSort')?.selectedOptions?.[0]?.text || 'Selected location'
+      : '';
+    summary.innerHTML = `
+      <span><i class="fas fa-filter"></i> Showing <strong>${shown}</strong> of <strong>${total}</strong> tenants${locationLabel ? ` • ${escapeHtml(locationLabel)}` : ''}</span>
+      ${query ? `<span>Search: <strong>${escapeHtml(query)}</strong></span>` : ''}
+    `;
+    const container = document.getElementById('tenantListContainer');
+    if (container?.parentNode) container.parentNode.insertBefore(summary, container);
+  }
+
+  function renderTenantList() {
+    const container = document.getElementById('tenantListContainer');
+    if (!container) return;
+
+    const allTenants = currentUser?.tenantData || [];
+    const selectedLocation = document.getElementById('locationSort')?.value || 'all';
+    const query = getSearchQuery();
+
+    let tenants = currentUser?.tenantSearchIndex || [];
+    if (!tenants.length && allTenants.length) {
+      currentUser.tenantSearchIndex = buildTenantSearchIndex(allTenants);
+      tenants = currentUser.tenantSearchIndex;
+    }
+
+    // Apply location filter first, then the local search index.
+    if (selectedLocation === '20-swanson') {
+      tenants = tenants.filter(t => normalizeSearch(t.propertyLocation) === '20 swanson street');
+    } else if (selectedLocation === '99a-station') {
+      tenants = tenants.filter(t => normalizeSearch(t.propertyLocation) === '99a station road');
+    }
+
+    if (query) tenants = tenants.filter(t => tenantMatchesQuery(t, query));
+
+    tenants.sort((a, b) => {
+      const locationCompare = String(a.propertyLocation || '').trim().localeCompare(
+        String(b.propertyLocation || '').trim(), 'en-ZA', { sensitivity: 'base', numeric: true }
+      );
+      if (locationCompare !== 0) return locationCompare;
+      return String(a.fullName || '').localeCompare(
+        String(b.fullName || ''), 'en-ZA', { sensitivity: 'base' }
+      );
+    });
+
+    renderSearchSummary(allTenants.length, tenants.length, query, selectedLocation);
+
+    if (!allTenants.length) {
+      container.innerHTML = `
+        <div class="search-empty">
+          <i class="fas fa-user-friends"></i>
+          <h4>No tenants registered</h4>
+          <p>Add your first tenant using <strong>New Tenant</strong>.</p>
+        </div>`;
       return;
     }
 
-    // Filter tenants by the selected property location.
-    // The two available property locations are shown exactly in the dropdown.
-    const selectedLocation = sortControl?.value || 'all';
-
-    if (selectedLocation === '20-swanson') {
-      tenants = tenants.filter(t =>
-        String(t.propertyLocation || '').trim().toLowerCase() === '20 swanson street'
-      );
-    } else if (selectedLocation === '99a-station') {
-      tenants = tenants.filter(t =>
-        String(t.propertyLocation || '').trim().toLowerCase() === '99a station road'
-      );
+    if (!tenants.length) {
+      container.innerHTML = `
+        <div class="search-empty">
+          <i class="fas fa-search"></i>
+          <h4>No matching tenants</h4>
+          <p>Try a different name, ID, phone number, property or room.</p>
+        </div>`;
+      return;
     }
 
-    // Keep the displayed tenants alphabetically ordered by location.
-    tenants.sort((a, b) =>
-      String(a.propertyLocation || '').trim().localeCompare(
-        String(b.propertyLocation || '').trim(),
-        'en-ZA',
-        { sensitivity: 'base', numeric: true }
-      )
-    );
-
     container.innerHTML = tenants.map(t => `
-      <div class="tenant-card ${selectedTenantId === t.id ? 'selected' : ''}" data-id="${t.id}">
-        <div style="display:flex; justify-content:space-between;"><strong>${escapeHtml(t.fullName)}</strong><span class="badge-rent">${formatZAR(t.rentAmount)}/mo</span></div>
+      <div class="tenant-card ${selectedTenantId === t.id ? 'selected' : ''}" data-id="${escapeHtml(t.id)}">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+          <strong>${escapeHtml(t.fullName)}</strong>
+          <span class="badge-rent">${formatZAR(Number(t.rentAmount) || 0)}/mo</span>
+        </div>
         <div><i class="fas fa-id-card"></i> ${escapeHtml(t.idNumber || 'No ID')}</div>
-        <div><i class="fas fa-map-pin"></i> ${escapeHtml(t.propertyLocation?.split(',')[0] || t.propertyLocation)}</div>
-        <div style="margin-top:10px; display:flex; gap:8px;"><button class="edit-tenant-btn" data-id="${t.id}" style="background:#2563EB; border:none; padding:5px 12px; border-radius:30px; color:white; cursor:pointer;">Edit</button><button class="delete-tenant-btn" data-id="${t.id}" style="background:#E5E7EB; border:none; padding:5px 12px; border-radius:30px; cursor:pointer;">Delete</button></div>
+        <div><i class="fas fa-map-pin"></i> ${escapeHtml(t.propertyLocation?.split(',')[0] || t.propertyLocation || 'No location')}</div>
+        <div><i class="fas fa-door-open"></i> ${escapeHtml(t.roomNumber || 'No unit')}</div>
+        <div style="margin-top:10px; display:flex; gap:8px;">
+          <button class="edit-tenant-btn" data-id="${escapeHtml(t.id)}" style="background:#2563EB; border:none; padding:5px 12px; border-radius:30px; color:white; cursor:pointer;">Edit</button>
+          <button class="delete-tenant-btn" data-id="${escapeHtml(t.id)}" style="background:#E5E7EB; border:none; padding:5px 12px; border-radius:30px; cursor:pointer;">Delete</button>
+        </div>
       </div>
     `).join('');
 
-    document.querySelectorAll('.tenant-card').forEach(card => card.addEventListener('click', (e) => {
+    container.querySelectorAll('.tenant-card').forEach(card => card.addEventListener('click', e => {
       if (e.target.closest('.edit-tenant-btn') || e.target.closest('.delete-tenant-btn')) return;
       selectedTenantId = card.dataset.id;
       renderTenantList();
       renderRightPanel(selectedTenantId);
     }));
 
-    document.querySelectorAll('.edit-tenant-btn').forEach(btn => btn.addEventListener('click', (e) => {
+    container.querySelectorAll('.edit-tenant-btn').forEach(btn => btn.addEventListener('click', e => {
       e.stopPropagation();
       openEditModal(btn.dataset.id);
     }));
 
-    document.querySelectorAll('.delete-tenant-btn').forEach(btn => btn.addEventListener('click', async (e) => {
+    container.querySelectorAll('.delete-tenant-btn').forEach(btn => btn.addEventListener('click', async e => {
       e.stopPropagation();
-      let confirmed = await showConfirm("Delete Tenant", "Delete this tenant permanently?");
-      if (confirmed) {
+      const confirmed = await showConfirm('Delete Tenant', 'Delete this tenant permanently?');
+      if (!confirmed) return;
+      try {
+        showProcessing(true);
         await deleteTenant(btn.dataset.id);
         if (selectedTenantId === btn.dataset.id) selectedTenantId = currentUser.tenantData[0]?.id || null;
-        updateStats();
-        showToast("Tenant deleted", false);
+        showToast('Tenant deleted', true);
+      } catch (error) {
+        console.error('Delete tenant error:', error);
+        showToast('Could not delete tenant. Please try again.', false);
+      } finally {
+        showProcessing(false);
       }
     }));
   }
@@ -1509,6 +1740,56 @@ async function handleEmailVerification(oobCode) {
 
   document.getElementById('logoutBtn')?.addEventListener('click', () => auth.signOut());
   document.getElementById('locationSort')?.addEventListener('change', renderTenantList);
+
+  // Debounced typing keeps the UI responsive without Firebase calls.
+  let tenantSearchTimer = null;
+  function runTenantSearch() {
+    const input = document.getElementById('tenantSearch');
+    const clear = document.getElementById('clearTenantSearch');
+    const hasQuery = Boolean(input?.value.trim());
+    clear?.classList.toggle('visible', hasQuery);
+    renderTenantList();
+  }
+
+  document.getElementById('tenantSearch')?.addEventListener('input', () => {
+    clearTimeout(tenantSearchTimer);
+    tenantSearchTimer = setTimeout(runTenantSearch, 120);
+  });
+
+  document.getElementById('tenantSearch')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      clearTimeout(tenantSearchTimer);
+      runTenantSearch();
+    }
+    if (e.key === 'Escape') {
+      const input = document.getElementById('tenantSearch');
+      if (input) input.value = '';
+      runTenantSearch();
+      input?.blur();
+    }
+  });
+
+  document.getElementById('tenantSearchBtn')?.addEventListener('click', () => {
+    clearTimeout(tenantSearchTimer);
+    runTenantSearch();
+    document.getElementById('tenantSearch')?.focus();
+  });
+
+  document.getElementById('clearTenantSearch')?.addEventListener('click', () => {
+    const input = document.getElementById('tenantSearch');
+    if (input) input.value = '';
+    runTenantSearch();
+    input?.focus();
+  });
+
+  // Desktop shortcut: Ctrl+K / Cmd+K focuses tenant search.
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      document.getElementById('tenantSearch')?.focus();
+    }
+  });
+
   document.getElementById('addTenantBtn')?.addEventListener('click', openAddModal);
   document.getElementById('modalSaveBtn')?.addEventListener('click', saveFromModal);
   document.getElementById('modalCancelBtn')?.addEventListener('click', closeModal);
@@ -1533,7 +1814,7 @@ async function handleEmailVerification(oobCode) {
           p.classList.add('fade-out');
           setTimeout(() => { p.style.display = 'none'; }, 800);
         } 
-      }, 1500); óóóóøóøøó
+      }, 1500);
       renderAuth();
     } else {
       let p = document.getElementById('preloader'); 
@@ -1545,6 +1826,7 @@ async function handleEmailVerification(oobCode) {
     handleResetConfirmation();
   });
 })();
+/* HOUSE OF GRACE OPTIMIZATION: local tenant search index, debounced search, location filter, keyboard shortcut, safer HTML escaping. */
 </script>
 </body>
 </html>
